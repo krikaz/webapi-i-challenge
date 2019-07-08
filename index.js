@@ -29,15 +29,26 @@ server.get('/api/users/:id', (req, res) => {
 });
 
 server.post('/api/users', (req, res) => {
-	Users.insert(req.body)
-		.then(data => {
-			console.log('success');
-			res.json(data);
-		})
-		.catch(error => {
-			console.log('failure');
-			res.json(error);
+	if (req.body.name && req.body.bio) {
+		Users.insert(req.body)
+			.then(data => {
+				console.log('success');
+				res.status(201);
+				res.json(data);
+			})
+			.catch(error => {
+				console.log('failure');
+				res.status(500);
+				res.json({
+					error: 'There was an error while saving the user to the database',
+				});
+			});
+	} else {
+		req.connection.on('close', () => {
+			res.status(400);
+			res.json({ errorMessage: 'Please provide name and bio for the user.' });
 		});
+	}
 });
 
 server.put('/api/users', (req, res) => {
