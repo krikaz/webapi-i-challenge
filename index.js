@@ -51,13 +51,27 @@ server.post('/api/users', (req, res) => {
 });
 
 server.put('/api/users', (req, res) => {
-	Users.update(req.params.id, req.body)
-		.then(data => {
-			res.json(data);
-		})
-		.catch(error => {
-			res.json(error);
-		});
+	if (req.body.name && req.body.bio) {
+		Users.update(req.params.id, req.body)
+			.then(data => {
+				if (!data) {
+					res.status(404);
+					res.json({
+						message: 'The user with the specified ID does not exist.',
+					});
+				} else {
+					res.status(200);
+					res.json(data);
+				}
+			})
+			.catch(() => {
+				res.status(500);
+				res.json({ error: 'The user information could not be modified.' });
+			});
+	} else {
+		res.status(400);
+		res.json({ errorMessage: 'Please provide name and bio for the user.' });
+	}
 });
 
 server.delete('/api/users/:id', (req, res) => {
