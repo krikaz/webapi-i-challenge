@@ -44,10 +44,9 @@ server.post('/api/users', (req, res) => {
 				});
 			});
 	} else {
-		req.connection.on('close', () => {
-			res.status(400);
-			res.json({ errorMessage: 'Please provide name and bio for the user.' });
-		});
+		req.setTimeout(1000);
+		res.status(400);
+		res.json({ errorMessage: 'Please provide name and bio for the user.' });
 	}
 });
 
