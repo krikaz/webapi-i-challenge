@@ -7,24 +7,27 @@ server.use(express.json());
 server.get('/api/users', (req, res) => {
 	Users.find()
 		.then(data => {
-			console.log('success');
 			res.json(data);
 		})
-		.catch(error => {
-			console.log('failure');
-			res.json(error);
+		.catch(() => {
+			res.status(500);
+			res.json({ error: 'The users information could not be retrieved.' });
 		});
 });
 
 server.get('/api/users/:id', (req, res) => {
 	Users.findById(req.params.id)
 		.then(data => {
-			console.log('success');
-			res.json(data);
+			if (!data) {
+				res.status(404);
+				res.json({ message: 'The user with the specified ID does not exist.' });
+			} else {
+				res.json(data);
+			}
 		})
-		.catch(error => {
-			console.log('failure');
-			res.json(error);
+		.catch(() => {
+			res.status(500);
+			res.json({ error: 'The user information could not be retrieved.' });
 		});
 });
 
@@ -32,19 +35,16 @@ server.post('/api/users', (req, res) => {
 	if (req.body.name && req.body.bio) {
 		Users.insert(req.body)
 			.then(data => {
-				console.log('success');
 				res.status(201);
 				res.json(data);
 			})
-			.catch(error => {
-				console.log('failure');
+			.catch(() => {
 				res.status(500);
 				res.json({
 					error: 'There was an error while saving the user to the database',
 				});
 			});
 	} else {
-		req.setTimeout(1000);
 		res.status(400);
 		res.json({ errorMessage: 'Please provide name and bio for the user.' });
 	}
@@ -53,11 +53,9 @@ server.post('/api/users', (req, res) => {
 server.put('/api/users', (req, res) => {
 	Users.update(req.params.id, req.body)
 		.then(data => {
-			console.log('success');
 			res.json(data);
 		})
 		.catch(error => {
-			console.log('failure');
 			res.json(error);
 		});
 });
@@ -65,11 +63,9 @@ server.put('/api/users', (req, res) => {
 server.delete('/api/users/:id', (req, res) => {
 	Users.remove(req.params.id)
 		.then(data => {
-			console.log('success');
 			res.json(data);
 		})
 		.catch(error => {
-			console.log('failure');
 			res.json(error);
 		});
 });
