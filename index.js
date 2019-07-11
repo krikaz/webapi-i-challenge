@@ -1,6 +1,8 @@
+require('dotenv').config();
 const express = require('express');
 const server = express();
 const Users = require('./data/db');
+const port = process.env.port;
 
 server.use(express.json());
 
@@ -90,6 +92,6 @@ server.delete('/api/users/:id', (req, res) => {
 		});
 });
 
-server.listen(3000, () => {
-	console.log('listening on 3000');
+server.listen(port, () => {
+	console.log(`listening on port ${port}`);
 });
